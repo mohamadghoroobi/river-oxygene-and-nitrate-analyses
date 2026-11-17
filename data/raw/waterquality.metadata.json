@@ -1,0 +1,9 @@
+{
+  "source_url": "https://statistik.tu-dortmund.de/storages/statistik/r/Downloads/Studium/Studiengaenge-Infos/Data_Science/waterquality.csv",
+  "downloaded_on": "2026-11-17",
+  "download_method": "PowerShell Invoke-WebRequest",
+  "sha256": "8aeec7fac38d29c194b786d36c3bfb7a7f65e9de0cbf8d3b2c84855c46a75344",
+  "size_bytes": 38470,
+  "format": "UTF-8-compatible semicolon-separated CSV; decimal point",
+  "source_brief": "Application_Report_Master_Data_Science_Summer_2027.pdf"
+}
