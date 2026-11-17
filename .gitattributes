@@ -1,0 +1,10 @@
+*.pdf binary
+*.png binary
+*.py text eol=lf
+*.md text eol=lf
+*.json text eol=lf
+*.ipynb text eol=lf
+*.txt text eol=lf
+.gitattributes text eol=lf
+.gitignore text eol=lf
+data/raw/*.csv -text whitespace=cr-at-eol
