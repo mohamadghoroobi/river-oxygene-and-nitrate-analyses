@@ -1,0 +1,27 @@
+outcome,contrast,p_holm_HC2,reject_005_HC2
+oxygen_mgL,spring - autumn,0.30877685992654264,False
+oxygen_mgL,equal section marginal means,9.750919242535788e-08,True
+oxygen_mgL,no section by season interaction,2.140415611440469e-05,True
+oxygen_mgL,A1 - A2,0.05064648120804814,False
+oxygen_mgL,A1 - A3,0.05064648120804814,False
+oxygen_mgL,A1 - A4,8.722846487677607e-10,True
+oxygen_mgL,A1 - A5,0.0051409497345078796,True
+oxygen_mgL,A2 - A3,1.0,False
+oxygen_mgL,A2 - A4,0.0029853967923584267,True
+oxygen_mgL,A2 - A5,1.0,False
+oxygen_mgL,A3 - A4,0.010343727445668142,True
+oxygen_mgL,A3 - A5,1.0,False
+oxygen_mgL,A4 - A5,0.038131197036604454,True
+nitrate_mgL,spring - autumn,7.843185513978445e-09,True
+nitrate_mgL,equal section marginal means,0.0,True
+nitrate_mgL,no section by season interaction,1.0,False
+nitrate_mgL,A1 - A2,5.375394820794216e-40,True
+nitrate_mgL,A1 - A3,1.908357583765548e-157,True
+nitrate_mgL,A1 - A4,2.1203395944221297e-276,True
+nitrate_mgL,A1 - A5,0.0,True
+nitrate_mgL,A2 - A3,1.6368986114316602e-39,True
+nitrate_mgL,A2 - A4,1.3148112109741909e-105,True
+nitrate_mgL,A2 - A5,4.2118413060752187e-156,True
+nitrate_mgL,A3 - A4,5.106636264122993e-16,True
+nitrate_mgL,A3 - A5,2.3731509548378282e-42,True
+nitrate_mgL,A4 - A5,6.200476570322705e-08,True

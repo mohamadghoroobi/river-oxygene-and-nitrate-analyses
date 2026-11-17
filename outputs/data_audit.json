@@ -1,0 +1,29 @@
+{
+  "rows": 900,
+  "columns": [
+    "ID",
+    "river_section",
+    "saison",
+    "nitrate_mgL",
+    "oxygen_mgL"
+  ],
+  "missing_values": {
+    "ID": 0,
+    "river_section": 0,
+    "saison": 0,
+    "nitrate_mgL": 0,
+    "oxygen_mgL": 0
+  },
+  "duplicate_ids": 0,
+  "duplicate_rows": 0,
+  "section_season_cells": 20,
+  "observations_per_cell": 45,
+  "raw_sha256": "8aeec7fac38d29c194b786d36c3bfb7a7f65e9de0cbf8d3b2c84855c46a75344",
+  "software": {
+    "python": "3.12.0",
+    "pandas": "3.0.3",
+    "numpy": "2.4.6",
+    "matplotlib": "3.11.0"
+  },
+  "scope": "Descriptive analysis only; no hypothesis tests performed."
+}

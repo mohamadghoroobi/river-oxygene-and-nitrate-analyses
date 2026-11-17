@@ -1,0 +1,25 @@
+{
+  "alpha": 0.05,
+  "covariance": "HC3",
+  "reference_distributions": "normal for scalar contrasts; chi-square for joint Wald tests",
+  "multiplicity": "Holm over all 26 tests across both analytes",
+  "confidence_intervals": "95% pointwise normal intervals; not multiplicity adjusted",
+  "software": {
+    "scipy": "1.18.1",
+    "statsmodels": "0.15.0"
+  },
+  "cross_checks": [
+    {
+      "outcome": "oxygen_mgL",
+      "cell_means_max_abs_error": 2.6645352591003757e-15,
+      "HC3_max_abs_error": 6.938893903907228e-18
+    },
+    {
+      "outcome": "nitrate_mgL",
+      "cell_means_max_abs_error": 3.552713678800501e-15,
+      "HC3_max_abs_error": 2.7755575615628914e-17
+    }
+  ],
+  "holm_independent_check": "passed",
+  "same_decisions_with_HC2": true
+}
