@@ -1,9 +1,9 @@
 {
-  "alpha": 0.05,
+  "alpha": 0.075,
   "covariance": "HC3",
   "reference_distributions": "normal for scalar contrasts; chi-square for joint Wald tests",
   "multiplicity": "Holm over all 26 tests across both analytes",
-  "confidence_intervals": "95% pointwise normal intervals; not multiplicity adjusted",
+  "confidence_intervals": "92.5% pointwise normal intervals; not multiplicity adjusted",
   "software": {
     "scipy": "1.18.1",
     "statsmodels": "0.15.0"

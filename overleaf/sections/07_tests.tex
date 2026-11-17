@@ -1,0 +1,24 @@
+\subsection{Seasonal tests and section comparisons}
+Table~\ref{tab:season-tests} answers the spring--autumn question. Nitrate rejects after Holm adjustment; oxygen does not. The oxygen pointwise interval excludes zero, but its adjusted $p$-value exceeds 0.075 because the interval does not correct for the 26 comparisons. Failure to reject does not establish equivalence.
+
+\begin{table}[H]
+\centering\footnotesize\singlespacing
+\input{tables/season_tests}
+\caption{Spring minus autumn, averaged over sections. Differences and pointwise intervals are in mg/L.}\label{tab:season-tests}
+\end{table}
+
+Table~\ref{tab:omnibus} shows section differences for both analytes and an interaction for oxygen. The nitrate interaction does not reject. All pairwise results are given in Table~\ref{tab:pairs}.
+
+\begin{table}[H]
+\centering\footnotesize\singlespacing
+\input{tables/omnibus}
+\caption{Joint robust Wald tests with chi-square reference distributions.}\label{tab:omnibus}
+\end{table}
+
+\begin{table}[H]
+\centering\footnotesize\singlespacing
+\input{tables/pairs}
+\caption{Section contrasts: first section minus second, averaged over seasons, in mg/L. All three test tables share one 26-test Holm adjustment. Very small adjusted $p$-values are shown as $<10^{-99}$.}\label{tab:pairs}
+\end{table}
+
+All ten nitrate pairs reject at 0.075. Seven oxygen pairs reject: A1--A2, A1--A3, A1--A4, A1--A5, A2--A4, A3--A4, and A4--A5. A2--A3, A2--A5, and A3--A5 do not reject. These statements concern seasonal-average section means.

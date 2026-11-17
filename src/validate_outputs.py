@@ -4,6 +4,7 @@ import json
 import numpy as np
 import pandas as pd
 from analyze import ROOT, OUTCOMES, SECTIONS, load_data
+from inference import ALPHA
 
 
 def main():
@@ -17,7 +18,8 @@ def main():
     assert len(tests) == 26 and not tests[['outcome', 'kind', 'contrast']].duplicated().any()
     assert tests.p_raw.between(0, 1).all() and tests.p_holm.between(0, 1).all()
     assert (tests.p_holm >= tests.p_raw).all()
-    assert np.array_equal(tests.reject_005, tests.p_holm <= .05)
+    assert np.allclose(tests.alpha, ALPHA)
+    assert np.array_equal(tests.reject, tests.p_holm <= ALPHA)
     for outcome in OUTCOMES:
         rows = tests[tests.outcome == outcome]
         seasonal = rows[rows.kind == 'season'].iloc[0]

@@ -1,0 +1,33 @@
+\section{Statistical methods}\label{sec:methods}
+\subsection{Full factorial model and its justification}
+For each analyte separately, let $Y_{ijk}$ denote observation $k$ in section $i$ and season $j$, where $i=1,\ldots,5$, $j=1,\ldots,4$, and $k=1,\ldots,45$. The full factorial model is expressed in cell-means form:
+\begin{equation}
+Y_{ijk}=\mu_{ij}+\varepsilon_{ijk},\qquad
+E(\varepsilon_{ijk})=0,\quad
+\operatorname{Var}(\varepsilon_{ijk})=\sigma_{ij}^{2}.
+\end{equation}
+This model assigns each section--season combination its own mean. It retains the interaction rather than assuming identical spatial differences in every season, and permits unequal variances across the 20 cells.
+
+In matrix form, $\mathbf Y=X\boldsymbol\beta+\boldsymbol\varepsilon$, where $X$ has one indicator column per cell. The least-squares estimate is
+\begin{equation}
+\widehat{\boldsymbol\beta}=(X^\top X)^{-1}X^\top\mathbf Y.
+\end{equation}
+The disjoint indicator columns make each coefficient its sample cell mean. There are $900-20=880$ residual degrees of freedom.
+
+\subsection{Contrasts and scientific interpretation}
+The spring--autumn and section-pair estimands are
+\begin{align}
+\Delta&=\frac15\sum_{i=1}^{5}
+  (\mu_{i,\mathrm{spring}}-\mu_{i,\mathrm{autumn}}),\\
+D_{ab}&=\frac14\sum_{j=1}^{4}(\mu_{aj}-\mu_{bj}),\quad a<b.
+\end{align}
+Positive $\Delta$ means higher spring concentration; positive $D_{ab}$ means higher concentration in section $a$. The weights give sections and seasons equal representation. Because the data are balanced, these estimates equal the corresponding pooled mean differences. The underlying cell differences need not be constant.
+
+\subsection{Heteroskedasticity-robust covariance}
+With residual $e_r$ and leverage $h_r$, the HC3 estimator is
+\begin{equation}
+\widehat V=(X^\top X)^{-1}X^\top
+ \operatorname{diag}\!\left\{\frac{e_r^2}{(1-h_r)^2}\right\}
+ X(X^\top X)^{-1}.
+\end{equation}
+Here $h_r=1/45$. A cell's diagonal element simplifies to $s_{ij}^2/44$, using its residual sum of squares $44s_{ij}^2$ and inverse design factors $1/45$. Direct cell calculations verify this identity. HC3 does not correct spatial or temporal dependence.

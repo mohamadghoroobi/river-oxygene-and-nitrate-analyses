@@ -1,0 +1,28 @@
+\section{Data and problem definition}\label{sec:data}
+\subsection{Source, measurements and design}
+The dataset \texttt{waterquality.csv} was supplied by TU Dortmund University for the summer-semester 2027 M.Sc.\ Data Science application task. It was downloaded on 17 November 2026 from the URL given in the application brief. The original CSV, source URL, download date, file size, and SHA-256 checksum are retained in the project repository. ``Saubach'' is the name assumed for this analysis as requested; the CSV itself does not identify the river.
+
+The five sections are ordered from headwaters to mouth: A1 (headwaters), A2 (upper course), A3 (middle course), A4 (lower course), and A5 (mouth). Each section contains 180 rows: 45 in each of spring, summer, autumn, and winter. Thus, every season contains 225 observations. Each row contains both an oxygen and a nitrate measurement. Table~\ref{tab:variables} summarizes the variables and their role.
+
+\begin{table}[H]
+\centering\small\singlespacing
+\begin{tabular}{lll}
+\toprule
+Variable & Meaning & Statistical role \\
+\midrule
+\texttt{ID} & Row identifier & Validation only \\
+\texttt{river\_section} & Five ordered sections & Categorical predictor \\
+\texttt{saison} & Four seasons & Categorical predictor \\
+\texttt{oxygen\_mgL} & Oxygen, mg/L & Quantitative outcome \\
+\texttt{nitrate\_mgL} & Nitrate, mg/L & Quantitative outcome \\
+\bottomrule
+\end{tabular}
+\caption{Variables in the original semicolon-separated CSV.}\label{tab:variables}
+\end{table}
+
+\subsection{Validation and information limits}
+All 900 observations were retained. Validation found no missing values, duplicate IDs, duplicate complete rows, negative concentrations, or nonfinite values. The expected 45 observations were present in every section--season cell. No imputation or outcome-based exclusion was performed.
+
+Section is modeled categorically because no distances between sections are supplied. Season is also categorical. The ID is neither a predictor nor evidence that measurements are temporally ordered or paired. Oxygen and nitrate appear in the same rows, but the two analytes are modeled separately; multiplicity correction includes both outcomes.
+
+The file does not give sampling dates, repeated-site identifiers, collection methods, or measurement protocols. Independent errors are therefore an explicit assumption. Without additional metadata, neither representativeness for other rivers or years nor a causal explanation of the observed differences can be established.

@@ -13,7 +13,7 @@ from statsmodels.stats.multitest import multipletests
 
 from analyze import ROOT, SEASONS, SECTIONS, OUTCOMES, load_data
 
-ALPHA = 0.05
+ALPHA = 0.075
 CELLS = [(section, season) for section in SECTIONS for season in SEASONS]
 
 
@@ -119,7 +119,8 @@ def main():
         result.p_raw.to_numpy()[order] * np.arange(26, 0, -1)))
     np.testing.assert_allclose(adjusted[order], direct, atol=1e-14)
     result['p_holm'] = adjusted
-    result['reject_005'] = reject
+    result['alpha'] = ALPHA
+    result['reject'] = reject
     result.to_csv(ROOT / 'outputs/tables/hypothesis_tests.csv', index=False)
     pd.DataFrame(diagnostics).to_csv(ROOT / 'outputs/tables/model_diagnostics.csv', index=False)
     pd.DataFrame(sensitivity).to_csv(ROOT / 'outputs/tables/pooled_variance_sensitivity.csv', index=False)
@@ -128,17 +129,17 @@ def main():
     hc2_p = stats.chi2.sf(result.wald_chi2.to_numpy() * 45/44, result.df.to_numpy())
     hc2_adj = multipletests(hc2_p, method='holm')[1]
     pd.DataFrame({'outcome': result.outcome, 'contrast': result.contrast,
-                  'p_holm_HC2': hc2_adj, 'reject_005_HC2': hc2_adj < ALPHA}).to_csv(
+                  'p_holm_HC2': hc2_adj, 'reject_HC2': hc2_adj <= ALPHA}).to_csv(
                       ROOT / 'outputs/tables/hc2_sensitivity.csv', index=False)
     audit = {'alpha': ALPHA, 'covariance': 'HC3',
         'reference_distributions': 'normal for scalar contrasts; chi-square for joint Wald tests',
         'multiplicity': 'Holm over all 26 tests across both analytes',
-        'confidence_intervals': '95% pointwise normal intervals; not multiplicity adjusted',
+        'confidence_intervals': f'{100*(1-ALPHA):g}% pointwise normal intervals; not multiplicity adjusted',
         'software': {'scipy': scipy.__version__, 'statsmodels': statsmodels.__version__},
         'cross_checks': checks, 'holm_independent_check': 'passed',
-        'same_decisions_with_HC2': bool(np.array_equal(hc2_adj < ALPHA, reject))}
+        'same_decisions_with_HC2': bool(np.array_equal(hc2_adj <= ALPHA, reject))}
     (ROOT / 'outputs/inference_audit.json').write_text(json.dumps(audit, indent=2) + '\n')
-    print(result[['outcome', 'kind', 'contrast', 'estimate', 'p_holm', 'reject_005']].to_string(index=False))
+    print(result[['outcome', 'kind', 'contrast', 'estimate', 'p_holm', 'reject']].to_string(index=False))
 
 
 if __name__ == '__main__':

@@ -1,0 +1,14 @@
+\section{Introduction}
+\subsection{Motivation and research questions}
+Spatial and seasonal comparisons provide two complementary views of river water quality. A concentration measured near the headwaters may differ from one measured near the mouth; a seasonal average may also conceal a spatial pattern that changes through the year. Both sources of variation should therefore be considered when comparing measurements. This report examines oxygen and nitrate in the Saubach river, using the river name stipulated in the task.
+
+The analysis addresses two questions. First, do spring and autumn differ in mean oxygen or nitrate concentration? Second, do mean concentrations differ among the five river sections, and which section pairs differ? All concentrations and estimated differences are expressed in milligrams per liter (mg/L). The seasonal comparison averages equally over sections, while each spatial comparison averages equally over seasons.
+
+\subsection{Approach and principal findings}
+The supplied dataset contains 900 observations in a balanced design: five river sections, four seasons, and 45 observations in each section--season combination. Descriptive summaries and figures show the location, spread, and shape of the concentrations. A full factorial model retains the section-by-season interaction. Heteroskedasticity-robust contrasts then address the research questions. Holm adjustment is applied across both analytes to limit the probability of at least one false rejection, using the specified significance level $\alpha=0.075$.
+
+The main findings are as follows. Mean nitrate is higher in spring than autumn by $0.871$ mg/L, and every section pair differs for nitrate after adjustment. Mean oxygen is higher in spring by $0.152$ mg/L, but that comparison does not reject after adjustment. Seven oxygen section pairs differ when averaged over seasons. Oxygen also shows a section-by-season interaction, so its spatial differences should not be described as constant throughout the year.
+
+These conclusions depend on the assumed independence of the observations. The data do not provide sampling dates or repeated-site identifiers with which to verify this assumption. The report quantifies the observed patterns without attributing them to an unmeasured environmental cause.
+
+Section~\ref{sec:data} describes the data and estimands. Section~\ref{sec:methods} defines and justifies the methods. Section~\ref{sec:evaluation} presents the descriptive and inferential results. Section~\ref{sec:summary} answers the questions and discusses limitations.

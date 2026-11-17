@@ -1,309 +1,289 @@
-Seasonal and spatial patterns<br/>in river water quality
-
-Oxygen and nitrate concentrations across five river sections
-
+Seasonal and spatial patterns
+in Saubach river water quality
+Oxygen and nitrate across five river sections
 Mohamad Ghoroobi
-
 17 November 2026
-
-Application Report<br/>M.Sc. Data Science<br/>TU Dortmund University<br/>Summer Semester 2027
-
-Abstract
-
-This report examines 900 measurements of oxygen and nitrate in a balanced design of five river sections and four seasons. A factorial cell-means model with heteroskedasticity-robust inference compares spring with autumn and evaluates section differences. After Holm adjustment across 26 tests, nitrate differs between spring and autumn and between every section pair. Oxygen shows section differences and a section-by-season interaction, but no statistically significant averaged spring-autumn difference. All inference is conditional on independent sampling, which cannot be verified from the supplied data.
-
-
---- PAGE BREAK ---
-
+Application Report
+M.Sc. Data Science
+TU Dortmund University
+Summer Semester 2027
+Project code, data and results:
+https://github.com/mohamadghoroobi/river-oxygene-and-nitrate-analyses
 
 Contents
-
-Section | Page
-
-1. Introduction and data | 3
-
-2. Statistical model and estimands | 4
-
-3. Testing, multiplicity and diagnostics | 5
-
-4. Descriptive seasonal results | 6
-
-5. Descriptive section results | 7
-
-6. Hypothesis tests and pairwise comparisons | 8
-
-7. Discussion and conclusions | 9
-
-References | 10
-
-Research questions
-
-First, do spring and autumn differ in their mean oxygen and nitrate concentrations? Second, do mean concentrations differ between river sections, and which pairs differ? Both questions concern concentrations measured in milligrams per liter (mg/L).
-
-Reading the results
-
-Seasonal contrasts average equally over the five sections. Section contrasts average equally over the four seasons. The model retains interactions, so these averages do not imply a common effect in every season or section. Two-sided tests use a familywise significance level of 0.05. All reported adjusted p-values belong to one family of 26 tests.
-
-The report includes two statistical figures and seven tables. The repository also supplies cell-level descriptive statistics, all pointwise confidence intervals, model diagnostics, provenance records, and executable analysis and report-generation code. These materials support reproduction without extending the ten-page report.
-
-
---- PAGE BREAK ---
-
-
-1. Introduction and data
-
-A comparison of water-quality measurements should distinguish spatial patterns from seasonal variation. Pooling all observations can obscure differences that change across the year. Here, oxygen and nitrate are analyzed separately while preserving the same section-season structure. The aim is to quantify observed differences and their statistical uncertainty, without attributing them to an unmeasured physical or biological cause.
-
-TU Dortmund University provides the application task and the data file <i>waterquality.csv</i> (TU Dortmund University, 2026a, 2026b). The dataset contains 900 rows. Each of five ordered sections has 180 observations: 45 in spring, summer, autumn, and winter. The section labels run from headwaters (A1) through upper course (A2), middle course (A3), and lower course (A4) to the mouth (A5).
-
-Table 1 describes the variables. Oxygen and nitrate are quantitative concentrations in mg/L. Season is treated as a categorical factor rather than a numeric trend. River section is ordered geographically, but is modeled categorically because no distances are supplied. ID is excluded from the statistical model.
-
-Variable | Meaning | Treatment
-
-ID | Row identifier | Validation only
-
-river_section | Five river sections | Categorical factor
-
-saison | Four seasons | Categorical factor
-
-oxygen_mgL | Oxygen concentration | Numeric outcome, mg/L
-
-nitrate_mgL | Nitrate concentration | Numeric outcome, mg/L
-
-Table 1. Variables in the original semicolon-separated CSV.
-
-Validation found no missing values, duplicate IDs, duplicate complete rows, negative concentrations, or nonfinite values. All 20 section-season cells contain exactly 45 observations. No measurements were removed or imputed. These checks establish consistency with the task description; they do not verify the measurement process.
-
-The file contains no sampling dates, repeated-site identifiers, collection protocol, or confirmed river name. The analysis therefore assumes independent observations conditionally within the design. This assumption is a limitation, not a conclusion from the IDs. The principal findings are a spring-autumn nitrate difference, a downstream nitrate gradient, and a season-dependent oxygen pattern. Sections 2-3 define the methods, Sections 4-6 present results, and Section 7 discusses their limits.
-
-
---- PAGE BREAK ---
-
-
-2. Statistical model and estimands
-
-2.1 A factorial model without additive restrictions
-
-For each outcome separately, let Y<sub>ijk</sub> be observation k in section i and season j, with i = 1,...,5, j = 1,...,4, and k = 1,...,45. The full factorial model is written in cell-means form:
-
-$Y_{ijk}=\mu_{ij}+\varepsilon_{ijk},\qquad E(\varepsilon_{ijk})=0,\quad \mathrm{Var}(\varepsilon_{ijk})=\sigma_{ij}^{2}.$
-
-This is equivalent to an intercept, section effects, season effects, and their interaction under suitable identifying constraints (Faraway, 2014, Chapters 14-16). In matrix form Y = X beta + epsilon, X has one indicator column for each of the 20 cells. The least-squares estimate is beta-hat = (X′X)<super>-1</super>X′Y, which equals the vector of sample cell means. There are 900 - 20 = 880 residual degrees of freedom.
-
-2.2 Contrasts that answer the questions
-
-The seasonal estimand is the equally weighted spring-autumn difference. The section estimand is the difference between two section means, each averaged over all seasons:
-
-$\Delta=\frac{1}{5}\sum_{i=1}^{5}(\mu_{i,\mathrm{spring}}-\mu_{i,\mathrm{autumn}}),\qquad D_{ab}=\frac{1}{4}\sum_{j=1}^{4}(\mu_{aj}-\mu_{bj}).$
-
-Because the dataset is balanced, these equal-weight averages also equal the corresponding pooled sample means. Explicit contrasts retain the intended weights if the implementation is reviewed. A positive Delta means a higher spring concentration; a positive D<sub>ab</sub> means a higher concentration in section a. Effect estimates remain in the original mg/L units.
-
-2.3 Covariance estimation
-
-Errors may have different variances across cells. HC3 covariance uses residuals e<sub>r</sub> and diagonal leverages h<sub>r</sub> of X(X′X)<super>-1</super>X′ (Davidson and MacKinnon, 2004, Section 5.5):
-
-$\widehat V_{\mathrm{HC3}}=(X^\top X)^{-1}X^\top\mathrm{diag}\!\left(\frac{e_r^2}{(1-h_r)^2}\right)X(X^\top X)^{-1}.$
-
-Here h<sub>r</sub> = 1/45, and the HC3 variance of cell mean ij simplifies to s<sub>ij</sub><super>2</super>/44, where s<sub>ij</sub><super>2</super> is the usual sample variance. The covariance matrix is diagonal under independent sampling. A direct cell-based calculation reproduces the software covariance to numerical precision. HC3 addresses heteroskedasticity; it does not correct dependence between observations.
-
-
---- PAGE BREAK ---
-
-
-3. Testing, multiplicity and diagnostics
-
-3.1 Null hypotheses and reference distributions
-
-For each analyte, the seasonal null is H<sub>0</sub>: Delta = 0 against Delta unequal to 0. The omnibus section null states that all five equally weighted section means are equal; four linearly independent contrasts test it. Each of ten section-pair nulls states D<sub>ab</sub> = 0. Finally, 12 independent difference-in-differences contrasts test the absence of interaction: (mu<sub>ij</sub> - mu<sub>i1</sub>) - (mu<sub>1j</sub> - mu<sub>11</sub>) = 0 for i &gt; 1 and j &gt; 1.
-
-$W=(L\hat\beta)^\top(L\widehat V_{\mathrm{HC3}}L^\top)^{-1}(L\hat\beta),\qquad W\ \dot\sim\ \chi_q^2.$
-
-L contains the q independent contrast rows. For q = 1, z = (c′ beta-hat)/sqrt(c′ V-hat c) is compared with a standard normal distribution; W = z<super>2</super>. These are large-sample approximations rather than exact finite-sample tests. Pointwise 95% confidence intervals are estimate plus or minus 1.96 times the HC3 standard error. Robust Wald inference is described by Davidson and MacKinnon (2004); the implementation uses statsmodels (2026).
-
-3.2 A single multiplicity family
-
-The family comprises 26 tests: two seasonal, two omnibus section, twenty pairwise section, and two interaction tests. Holm adjustment controls the probability of at least one false rejection at alpha = 0.05 when the individual p-values are valid. For ordered p-values p<sub>(1)</sub> through p<sub>(26)</sub>, define:
-
-$p^{\mathrm{adj}}_{(k)}=\min\!\left\{1,\ \max_{1\leq r\leq k}(26-r+1)p_{(r)}\right\}. $
-
-Reject when the adjusted p-value is at most 0.05. The procedure permits arbitrary dependence between tests (Holm, 1979; Hochberg and Tamhane, 1987). Including both analytes in one family avoids treating their related conclusions as separate opportunities for rejection. The 95% intervals remain pointwise and should not be read as simultaneous intervals corresponding to the adjusted decisions.
-
-3.3 Descriptive methods and diagnostic checks
-
-Tables report means, sample SDs with denominator n - 1, medians, quartiles, and ranges. A boxplot spans quartiles Q1 to Q3, marks the median, and extends whiskers to the furthest observations within 1.5(Q3 - Q1) of the box. Remaining points are displayed and retained. Quartiles use linear interpolation. Residual-versus-fitted and normal Q-Q plots inspect spread and shape; diagnostics follow the approach in Faraway (2014, Chapter 6). HC2 covariance provides a sensitivity check. No outcome-based observation deletion or model selection is used.
-
-
---- PAGE BREAK ---
-
-
-4. Descriptive seasonal results
-
-Table 2 summarizes the seasonal concentrations. Oxygen has its lowest mean in summer (7.040 mg/L) and its highest mean in winter (9.935 mg/L). Nitrate has its highest mean in summer (10.342 mg/L) and its lowest mean in winter (7.198 mg/L). Each season contributes the same number of observations from each river section.
-
-Season | n | Oxygen: mean (SD) | Nitrate: mean (SD)
-
-Spring | 225 | 9.531 (0.857) | 9.289 (2.591)
-
-Summer | 225 | 7.040 (0.930) | 10.342 (2.744)
-
-Autumn | 225 | 9.379 (0.888) | 8.418 (2.752)
-
-Winter | 225 | 9.935 (0.779) | 7.198 (2.442)
-
-Table 2. Seasonal mean and sample SD, in mg/L, pooling all five sections.
-
-Figure 1 displays the distributions rather than means alone. The spring and autumn oxygen distributions overlap substantially. Their nitrate distributions also overlap, despite a larger difference in their means. Overlap does not itself decide a hypothesis test; Section 6 quantifies uncertainty using the factorial model.
-
-[Figure: outputs/figures/seasonal_distributions.png]
-
-Figure 1. Seasonal boxplots, 225 observations per season. Boxes show Q1, median, and Q3; whiskers follow the 1.5-IQR rule. Points beyond whiskers are retained measurements.
-
-Spring oxygen has mean 9.531 mg/L and median 9.550 mg/L; autumn has mean 9.379 mg/L and median 9.514 mg/L. Spring nitrate has mean 9.289 mg/L and median 9.652 mg/L; autumn has mean 8.418 mg/L and median 8.568 mg/L. The observed mean differences are therefore +0.152 and +0.871 mg/L, respectively. These descriptive numbers do not yet incorporate multiplicity.
-
-
---- PAGE BREAK ---
-
-
-5. Descriptive section results
-
-Table 3 gives section summaries averaged over all four seasons. Mean nitrate increases from 5.350 mg/L at the headwaters to 11.467 mg/L at the mouth. Mean oxygen varies less between sections, from 8.694 mg/L in the lower course to 9.231 mg/L at the headwaters. The mouth has a higher oxygen mean than the lower course, so its pooled spatial pattern is not monotonic.
-
-Section | n | Oxygen: mean (SD) | Nitrate: mean (SD)
-
-A1: Headwaters | 180 | 9.231 (1.230) | 5.350 (1.708)
-
-A2: Upper course | 180 | 9.005 (1.280) | 7.343 (1.789)
-
-A3: Middle course | 180 | 8.990 (1.409) | 9.328 (1.809)
-
-A4: Lower course | 180 | 8.694 (1.465) | 10.570 (1.858)
-
-A5: Mouth | 180 | 8.936 (1.665) | 11.467 (1.985)
-
-Table 3. Section means and sample SDs in mg/L, pooling the four seasons.
-
-Figure 2 separates these profiles by season. Nitrate rises downstream in all four seasons. Summer oxygen decreases toward the mouth, whereas winter oxygen changes relatively little. Autumn oxygen falls in the lower course and rises again at the mouth. These unequal profiles motivate retaining the interaction rather than assuming an identical section effect throughout the year.
-
-[Figure: outputs/figures/section_season_means.png]
-
-Figure 2. Mean concentration by section and season; each point averages 45 observations. Lines connect ordered categories and do not imply continuous spatial interpolation. Uncertainty is evaluated by the tests in Section 6.
-
-Pooled section SDs include variation between seasons as well as variation within a season. They should therefore not be substituted for within-cell variability when assessing the factorial contrasts. The model uses residual variation within all 20 cells.
-
-
---- PAGE BREAK ---
-
-
-6. Hypothesis tests and pairwise comparisons
-
-Table 4 answers the seasonal question. Nitrate is higher in spring by 0.871 mg/L; its adjusted p-value is below 0.05. Oxygen has an estimated difference of 0.152 mg/L, but its interval includes zero and its adjusted p-value is 0.324. This does not establish equivalence of the seasons.
-
-Outcome | Difference | 95% pointwise CI | Raw p | Holm p
-
-Oxygen | 0.152 | [-0.009, 0.313] | 0.0647 | 0.3236
-
-Nitrate | 0.871 | [0.593, 1.148] | 8.11e-10 | 1.22e-08
-
-Table 4. Spring minus autumn contrasts, averaged over sections. Differences and intervals are in mg/L.
-
-Outcome / null hypothesis | W | df | Holm p
-
-Oxygen / equal section means | 42.70 | 4 | 1.55e-07
-
-Oxygen / no interaction | 48.30 | 12 | 3.33e-05
-
-Nitrate / equal section means | 2112.21 | 4 | &lt;1e-99
-
-Nitrate / no interaction | 10.53 | 12 | 1.0000
-
-Table 5. Robust joint Wald tests. Both section tests and the oxygen interaction test reject their nulls. The nitrate interaction test does not reject.
-
-Pair | Oxygen difference | Oxygen Holm p | Nitrate difference | Nitrate Holm p
-
-A1 - A2 | 0.226 | 0.0554 | -1.993 | 4.06e-39
-
-A1 - A3 | 0.241 | 0.0554 | -3.978 | &lt;1e-99
-
-A1 - A4 | 0.537 | 1.42e-09 | -5.220 | &lt;1e-99
-
-A1 - A5 | 0.294 | 0.0059 | -6.116 | &lt;1e-99
-
-A2 - A3 | 0.015 | 1.0000 | -1.985 | 1.21e-38
-
-A2 - A4 | 0.311 | 0.0035 | -3.227 | &lt;1e-99
-
-A2 - A5 | 0.069 | 1.0000 | -4.124 | &lt;1e-99
-
-A3 - A4 | 0.296 | 0.0117 | -1.242 | 1.14e-15
-
-A3 - A5 | 0.053 | 1.0000 | -2.138 | 2.03e-41
-
-A4 - A5 | -0.243 | 0.0421 | -0.897 | 9.19e-08
-
-Table 6. Section-pair contrasts (first section minus second), averaged equally over seasons. Differences are in mg/L. Tables 4-6 share one 26-test Holm adjustment. Very small p-values are displayed as &lt;1e-99; numerical underflow in the CSV does not imply zero probability.
-
-All ten nitrate pairs differ. Five oxygen pairs differ: A1-A4, A1-A5, A2-A4, A3-A4, and A4-A5. The remaining pairs do not reject at 0.05. Oxygen comparisons describe seasonal averages and must be read alongside its interaction.
-
-
---- PAGE BREAK ---
-
-
-7. Discussion and conclusions
-
-7.1 Diagnostics and robustness
-
-Table 7 summarizes within-cell variability and residual shape. Cell SDs vary, supporting the use of a covariance estimator that allows unequal variances. Residual skewness is close to zero for both outcomes. The residual Q-Q and fitted-value plots are supplied as Figure 3 in the repository; they show no pronounced overall curvature in the Q-Q relationship. This visual check cannot prove normality or independence.
-
-Diagnostic | Oxygen | Nitrate
-
-Within-cell SD range (mg/L) | 0.648-1.090 | 1.181-1.746
-
-Largest/smallest cell variance | 2.828 | 2.187
-
-Residual skewness | -0.009 | -0.008
-
-Maximum |standardized residual| | 3.472 | 3.634
-
-Table 7. Model diagnostics. Standardized residuals use the model residual mean square and leverage; all measurements remain in the analysis.
-
-Replacing HC3 by HC2 scales each cell-mean variance by 44/45 and leaves all 26 adjusted decisions unchanged. A pooled-variance seasonal calculation also leaves oxygen nonsignificant and nitrate significant. These checks address covariance choice, not errors in the sampling protocol. Tests remain asymptotic, and HC3 alone cannot correct spatial or temporal correlation.
-
-7.2 Answers and interpretation
-
-For spring versus autumn, the analysis finds higher mean nitrate in spring, averaged across sections, but insufficient evidence of an oxygen difference after correction. For river sections, both analytes show differences in their marginal means. Every nitrate pair differs, with higher means progressively downstream. The oxygen pairs identified in Table 6 differ on average over seasons, while its significant interaction indicates that spatial differences vary through the year. Failure to reject any other pair does not show that its means are equal.
-
-The nitrate gradient and the low summer oxygen values identify patterns worth investigating, but the dataset contains no covariates that explain them. There is no basis here for attributing changes to agriculture, discharge, temperature, or another mechanism. Statistical significance does not establish environmental harm or regulatory noncompliance; that would require applicable standards and additional contextual measurements.
-
-7.3 Limits and reproducibility
-
-The main limitation is the unknown sampling design. Repeated samples from the same site or sampling occasion could invalidate the assumed covariance structure. Future analysis should obtain dates, site identifiers, hydrological information, and measurement protocols, then use a suitable dependence model. The present conclusions apply conditionally to the supplied design, without a claim of representativeness for other rivers or years.
-
-Python (Python Software Foundation, 2026), NumPy (2026), pandas (2026), Matplotlib (2026), SciPy (Virtanen et al., 2020), and statsmodels (2026) produce the analysis. ReportLab (2026) generates this PDF; nbformat (Jupyter, 2026) supports the notebook. Raw-data hashes, software versions, scripts, and all numerical outputs are retained for reproduction.
-
-
---- PAGE BREAK ---
-
-
-References
-
-Davidson, R. and MacKinnon, J. G. (2004). <i>Econometric Theory and Methods.</i> Oxford University Press, New York. Section 5.5. Author-hosted edition: https://econ.queensu.ca/ETM/ (accessed 17 November 2026).
-
-Faraway, J. J. (2014). <i>Linear Models with R.</i> 2nd ed. Chapman &amp; Hall/CRC, Boca Raton. Chapters 1-3, 6, 14-16. Author materials: https://julianfaraway.github.io/faraway/LMR/ (accessed 17 November 2026).
-
-Hochberg, Y. and Tamhane, A. C. (1987). <i>Multiple Comparison Procedures.</i> John Wiley &amp; Sons, New York. https://doi.org/10.1002/9780470316672.
-
-Holm, S. (1979). A simple sequentially rejective multiple test procedure. <i>Scandinavian Journal of Statistics</i>, 6(2), 65-70.
-
-TU Dortmund University (2026a). <i>Application Report Master Data Science: Sommersemester 2027.</i> Department of Statistics. Application brief supplied as a local PDF; accessed 17 November 2026. Publication year is not specified; 2026 denotes access year.
-
-TU Dortmund University (2026b). <i>waterquality.csv.</i> Application dataset. https://statistik.tu-dortmund.de/storages/statistik/r/Downloads/Studium/Studiengaenge-Infos/Data_Science/waterquality.csv (downloaded 17 November 2026). Publication year is not specified; 2026 denotes access year.
-
-Python Software Foundation (2026). <i>Python</i>, version 3.12.0. https://www.python.org/. NumPy developers (2026). <i>NumPy</i>, version 2.4.6. https://numpy.org/. Software; accessed 17 November 2026.
-
-pandas development team (2026). <i>pandas</i>, version 3.0.3. https://pandas.pydata.org/. Matplotlib development team (2026). <i>Matplotlib</i>, version 3.11.0. https://matplotlib.org/. Software; accessed 17 November 2026.
-
-Virtanen, P., Gommers, R., Oliphant, T. E., et al. (2020). SciPy 1.0: fundamental algorithms for scientific computing in Python. <i>Nature Methods</i>, 17, 261-272. https://doi.org/10.1038/s41592-019-0686-2. SciPy version used: 1.18.1.
-
-statsmodels developers (2026). <i>statsmodels</i>, version 0.15.0. HC3 covariance and multiple-testing documentation. https://www.statsmodels.org/stable/ (accessed 17 November 2026).
-
-ReportLab (2026). <i>ReportLab Toolkit</i>, version 5.1.0. https://www.reportlab.com/. Jupyter developers (2026). <i>nbformat</i>, version 5.10.4. https://nbformat.readthedocs.io/. Software; accessed 17 November 2026.
+1 Introduction 3
+1.1 Motivation and research questions . . . . . . . . . . . . . . . . . . . . . . . . . . 3
+1.2 Approach and principal findings . . . . . . . . . . . . . . . . . . . . . . . . . . . 3
+2 Data and problem definition 4
+2.1 Source, measurements and design . . . . . . . . . . . . . . . . . . . . . . . . . . 4
+2.2 Validation and information limits . . . . . . . . . . . . . . . . . . . . . . . . . . . 4
+3 Statistical methods 5
+3.1 Full factorial model and its justification . . . . . . . . . . . . . . . . . . . . . . . 5
+3.2 Contrasts and scientific interpretation . . . . . . . . . . . . . . . . . . . . . . . . 5
+3.3 Heteroskedasticity-robust covariance . . . . . . . . . . . . . . . . . . . . . . . . . 5
+3.4 Hypotheses and test statistics . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 6
+3.5 Multiplicity and interval coverage . . . . . . . . . . . . . . . . . . . . . . . . . . 6
+3.6 Descriptive summaries and model checks . . . . . . . . . . . . . . . . . . . . . . 6
+4 Evaluation 7
+4.1 Descriptive seasonal analysis . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 7
+4.2 Descriptive spatial analysis . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 8
+4.3 Seasonal tests and section comparisons . . . . . . . . . . . . . . . . . . . . . . . . 9
+5 Summary and discussion 10
+5.1 Answers to the research questions . . . . . . . . . . . . . . . . . . . . . . . . . . 10
+5.2 Diagnostic evidence and limitations . . . . . . . . . . . . . . . . . . . . . . . . . 10
+5.3 Project materials . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 10
+Saubach river water quality 2
+
+1 Introduction
+1.1 Motivation and research questions
+Spatial and seasonal comparisons provide two complementary views of river water quality. A con-
+centration measured near the headwaters may differ from one measured near the mouth; a seasonal
+average may also conceal a spatial pattern that changes through the year. Both sources of variation
+should therefore be considered when comparing measurements. This report examines oxygen and
+nitrate in the Saubach river, using the river name stipulated in the task.
+The analysis addresses two questions. First, do spring and autumn differ in mean oxygen or nitrate
+concentration? Second, do mean concentrations differ among the five river sections, and which
+section pairs differ? All concentrations and estimated differences are expressed in milligrams per
+liter(mg/L).Theseasonalcomparisonaveragesequallyoversections,whileeachspatialcomparison
+averages equally over seasons.
+1.2 Approach and principal findings
+Thesupplieddatasetcontains900observationsinabalanceddesign: fiveriversections,fourseasons,
+and 45 observations in each section–season combination. Descriptive summaries and figures show
+the location, spread, and shape of the concentrations. A full factorial model retains the section-by-
+season interaction. Heteroskedasticity-robust contrasts then address the research questions. Holm
+adjustmentisappliedacrossbothanalytestolimittheprobabilityofatleastonefalserejection,using
+the specified significance level 𝛼 = 0.075.
+The main findings are as follows. Mean nitrate is higher in spring than autumn by 0.871 mg/L, and
+every section pair differs for nitrate after adjustment. Mean oxygen is higher in spring by 0.152
+mg/L, but that comparison does not reject after adjustment. Seven oxygen section pairs differ when
+averaged over seasons. Oxygen also shows a section-by-season interaction, so its spatial differences
+should not be described as constant throughout the year.
+These conclusions depend on the assumed independence of the observations. The data do not pro-
+vide sampling dates or repeated-site identifiers with which to verify this assumption. The report
+quantifies the observed patterns without attributing them to an unmeasured environmental cause.
+Section 2 describes the data and estimands. Section 3 defines and justifies the methods. Section 4
+presents the descriptive and inferential results. Section 5 answers the questions and discusses limi-
+tations.
+Saubach river water quality 3
+
+2 Data and problem definition
+2.1 Source, measurements and design
+Thedataset waterquality.csv wassuppliedbyTUDortmundUniversityforthesummer-semester
+2027 M.Sc. Data Science application task. It was downloaded on 17 November 2026 from the URL
+given in the application brief. The original CSV, source URL, download date, file size, and SHA-
+256checksumareretainedintheprojectrepository. “Saubach”isthenameassumedforthisanalysis
+as requested; the CSV itself does not identify the river.
+The five sections are ordered from headwaters to mouth: A1 (headwaters), A2 (upper course), A3
+(middle course), A4 (lower course), and A5 (mouth). Each section contains 180 rows: 45 in each
+of spring, summer, autumn, and winter. Thus, every season contains 225 observations. Each row
+contains both an oxygen and a nitrate measurement. Table 1 summarizes the variables and their
+role.
+Variable Meaning Statistical role
+ID Row identifier Validation only
+river_section Five ordered sections Categorical predictor
+saison Four seasons Categorical predictor
+oxygen_mgL Oxygen, mg/L Quantitative outcome
+nitrate_mgL Nitrate, mg/L Quantitative outcome
+Table 1: Variables in the original semicolon-separated CSV.
+2.2 Validation and information limits
+All 900 observations were retained. Validation found no missing values, duplicate IDs, duplicate
+complete rows, negative concentrations, or nonfinite values. The expected 45 observations were
+present in every section–season cell. No imputation or outcome-based exclusion was performed.
+Sectionismodeledcategoricallybecausenodistancesbetweensectionsaresupplied. Seasonisalso
+categorical. The ID is neither a predictor nor evidence that measurements are temporally ordered
+or paired. Oxygen and nitrate appear in the same rows, but the two analytes are modeled separately;
+multiplicity correction includes both outcomes.
+The file does not give sampling dates, repeated-site identifiers, collection methods, or measurement
+protocols. Independent errors are therefore an explicit assumption. Without additional metadata,
+neither representativeness for other rivers or years nor a causal explanation of the observed differ-
+ences can be established.
+Saubach river water quality 4
+
+3 Statistical methods
+3.1 Full factorial model and its justification
+Foreachanalyteseparately,let 𝑌𝑖 𝑗 𝑘 denoteobservation 𝑘 insection 𝑖 andseason 𝑗,where 𝑖 = 1, . . . , 5,
+𝑗 = 1, . . . , 4, and 𝑘 = 1, . . . , 45. The full factorial model is expressed in cell-means form:
+𝑌𝑖 𝑗 𝑘 = 𝜇𝑖 𝑗 + 𝜀𝑖 𝑗 𝑘 , 𝐸 (𝜀𝑖 𝑗 𝑘 ) = 0, Var(𝜀𝑖 𝑗 𝑘 ) = 𝜎2 𝑖 𝑗 . (1)
+This model assigns each section–season combination its own mean. It retains the interaction rather
+than assuming identical spatial differences in every season, and permits unequal variances across
+the 20 cells.
+In matrix form, Y = 𝑋 𝜷 + 𝜺, where 𝑋 has one indicator column per cell. The least-squares estimate
+is
+ˆ𝜷 = (𝑋 ⊤ 𝑋)−1 𝑋 ⊤Y. (2)
+Thedisjointindicatorcolumnsmakeeachcoefficientitssamplecellmean. Thereare 900−20 = 880
+residual degrees of freedom.
+3.2 Contrasts and scientific interpretation
+The spring–autumn and section-pair estimands are
+Δ = 1 5 5Õ 𝑖=1 (𝜇𝑖,spring − 𝜇𝑖,autumn), (3)
+𝐷𝑎𝑏 = 1 4 4Õ 𝑗=1 (𝜇𝑎 𝑗 − 𝜇𝑏 𝑗 ), 𝑎 < 𝑏. (4)
+Positive Δ means higher spring concentration; positive 𝐷𝑎𝑏 means higher concentration in section
+𝑎. Theweightsgivesectionsandseasonsequalrepresentation. Becausethedataarebalanced, these
+estimates equal the corresponding pooled mean differences. The underlying cell differences need
+not be constant.
+3.3 Heteroskedasticity-robust covariance
+With residual 𝑒𝑟 and leverage ℎ𝑟 , the HC3 estimator is
+ˆ𝑉 = (𝑋 ⊤ 𝑋)−1 𝑋 ⊤ diag
+{ 𝑒2 𝑟
+(1 − ℎ𝑟 )2
+}
+𝑋 (𝑋 ⊤ 𝑋)−1. (5)
+Here ℎ𝑟 = 1/45. A cell’s diagonal element simplifies to 𝑠2 𝑖 𝑗 /44, using its residual sum of squares
+44𝑠2 𝑖 𝑗 and inverse design factors 1/45. Direct cell calculations verify this identity. HC3 does not
+correct spatial or temporal dependence.
+Saubach river water quality 5
+
+3.4 Hypotheses and test statistics
+For each outcome, the seasonal null is 𝐻0 : Δ = 0 against 𝐻1 : Δ ≠ 0. The omnibus section null
+is equality of all five seasonal-average section means, represented by four independent contrasts.
+Each of the ten section-pair nulls is 𝐻0 : 𝐷𝑎𝑏 = 0. A further 12-contrast test checks absence of
+interaction:
+(𝜇𝑖 𝑗 − 𝜇𝑖1) − (𝜇1 𝑗 − 𝜇11) = 0, 𝑖 > 1, 𝑗 > 1. (6)
+For a 𝑞-row contrast matrix 𝐿, the Wald statistic is
+𝑊 = (𝐿ˆ𝜷)⊤ (𝐿ˆ𝑉 𝐿⊤)−1 (𝐿ˆ𝜷) ⁄∼ 𝜒2 𝑞 . (7)
+For a scalar contrast 𝑐, the signed statistic is 𝑧 = 𝑐⊤ˆ𝜷/ √ 𝑐⊤ ˆ𝑉 𝑐 and 𝑊 = 𝑧2. Two-sided 𝑝-values
+use a standard normal reference for 𝑧; joint tests use the indicated chi-square reference. These are
+asymptoticapproximations,notexactfinite-sampletests. Repeatedobservationsineachcellsupport
+approximation of the cell means, conditional on independent sampling and finite variances.
+3.5 Multiplicity and interval coverage
+The significance level is 𝛼 = 0.075. One family contains all 26 tests: two seasonal, two section
+omnibus,twentysectionpairs,andtwointeractions. Fororderedraw 𝑝-values 𝑝 (1) , . . . , 𝑝 (26) ,Holm-
+adjusted values are
+𝑝adj (𝑘) = min
+{
+1, max
+1≤𝑟 ≤𝑘
+(26 − 𝑟 + 1) 𝑝 (𝑟)
+}
+. (8)
+Reject if 𝑝adj ≤ 0.075. To see the familywise protection, suppose 𝑚0 nulls are true. At the first true
+rejection, the threshold is no greater than 𝛼/𝑚0. The union bound over the 𝑚0 true nulls therefore
+bounds any false rejection by 𝛼, provided their individual 𝑝-values are valid. Here that validity is
+approximate because Wald references are asymptotic.
+Pointwise 92.5% intervalsareestimate ±𝑧0.9625 timesstandarderror,with 𝑧0.9625 ≈ 1.7805. Theyare
+not simultaneous intervals. A pointwise interval may exclude zero even when the globally adjusted
+test does not reject.
+3.6 Descriptive summaries and model checks
+Descriptive summaries use means, sample SDs, medians, quartiles, and ranges. Boxplots show the
+median and the interval from 𝑄1 to 𝑄3; whiskers reach the furthest observations within 1.5(𝑄3 −
+𝑄1) of the box. Other observations are displayed and retained. Quartiles use linear interpolation.
+Residual-versus-fitted and normal Q–Q plots inspect spread and shape. The HC2 sensitivity estima-
+tor replaces (1 − ℎ𝑟 )2 by 1 − ℎ𝑟 in HC3; here it scales the covariance by 44/45.
+Saubach river water quality 6
+
+4 Evaluation
+4.1 Descriptive seasonal analysis
+Table2describes the seasonal concentrations. Oxygen has its lowest mean in summer (7.040 mg/L)
+and its highest mean in winter (9.935 mg/L). Nitrate has its highest mean in summer (10.342 mg/L)
+anditslowestmeaninwinter(7.198mg/L).Eachseasoncontainsthesamenumberofmeasurements
+from each river section.
+Season 𝑛 Oxygen: mean (SD) Nitrate: mean (SD)
+Spring 225 9.531 (0.857) 9.289 (2.591)
+Summer 225 7.040 (0.930) 10.342 (2.744)
+Autumn 225 9.379 (0.888) 8.418 (2.752)
+Winter 225 9.935 (0.779) 7.198 (2.442)
+Table 2: Seasonal mean and sample SD in mg/L, pooled over five sections.
+Figure 1 shows the distributions. Spring and autumn oxygen overlap substantially. Their nitrate dis-
+tributions also overlap, despite a larger difference in their means. Distributional overlap alone does
+not decide a test of mean differences; the inferential analysis evaluates uncertainty and multiplicity
+separately.
+Figure 1: Seasonal distributions, with 225 observations per season. Boxes mark the quartiles and median.
+Whiskers use the 1.5-IQR rule; points beyond them are retained observations.
+Springoxygenhasmedian9.550mg/LandIQR1.153mg/L;autumnoxygenhasmedian9.514mg/L
+and IQR 1.265 mg/L. Spring nitrate has median 9.652 mg/L and IQR 4.039 mg/L; autumn nitrate
+hasmedian8.568mg/LandIQR3.883mg/L.Theselocationanddispersionsummariescomplement
+the means and SDs in Table 2.
+Saubach river water quality 7
+
+4.2 Descriptive spatial analysis
+Table3summarizesconcentrationsacrosssections,averagingthefourseasonsequally. Meannitrate
+increases from 5.350 mg/L at the headwaters to 11.467 mg/L at the mouth. Mean oxygen ranges
+from 8.694 mg/L in the lower course to 9.231 mg/L at the headwaters. Its pooled spatial profile is
+not monotonic: the mouth has a higher oxygen mean than the lower course.
+Section 𝑛 Oxygen: mean (SD) Nitrate: mean (SD)
+A1: Headwaters 180 9.231 (1.230) 5.350 (1.708)
+A2: Upper course 180 9.005 (1.280) 7.343 (1.789)
+A3: Middle course 180 8.990 (1.409) 9.328 (1.809)
+A4: Lower course 180 8.694 (1.465) 10.570 (1.858)
+A5: Mouth 180 8.936 (1.665) 11.467 (1.985)
+Table 3: Section means and sample SDs in mg/L, pooled over four seasons.
+Figure2separates the section profiles by season. Nitrate rises downstream in all four seasons. Sum-
+mer oxygen decreases toward the mouth, whereas winter oxygen varies relatively little between
+sections. Autumn oxygen is lower in A4 and higher again in A5. Thus, the spatial oxygen profiles
+are not parallel across seasons.
+Figure 2: Section means by season; each point represents 45 observations. Connecting lines link ordered
+categories and do not fit a continuous spatial model.
+Pooled section SDs include both seasonal variation and within-season variability. For this reason,
+they are not substituted for within-cell variances in the factorial contrasts. The inferential model
+estimates the 20 cell means and uses their residual variability. This preserves the observed balance
+while retaining different spatial patterns in different seasons.
+Saubach river water quality 8
+
+4.3 Seasonal tests and section comparisons
+Table 4 answers the spring–autumn question. Nitrate rejects after Holm adjustment; oxygen does
+not. The oxygen pointwise interval excludes zero, but its adjusted 𝑝-value exceeds 0.075 because
+the interval does not correct for the 26 comparisons. Failure to reject does not establish equivalence.
+Outcome Difference 92.5% pointwise CI Raw 𝑝 Holm 𝑝
+Oxygen 0.152 [0.005, 0.298] 0.0647 0.3236
+Nitrate 0.871 [0.618, 1.123] 8.11 × 10−10 1.22 × 10−8
+Table 4: Spring minus autumn, averaged over sections. Differences and pointwise intervals are in mg/L.
+Table 5 shows section differences for both analytes and an interaction for oxygen. The nitrate inter-
+action does not reject. All pairwise results are given in Table 6.
+Outcome / null hypothesis 𝑊 df Holm 𝑝
+Oxygen / equal section means 42.70 4 1.55 × 10−7
+Oxygen / no interaction 48.30 12 3.33 × 10−5
+Nitrate / equal section means 2112.21 4 < 10−99
+Nitrate / no interaction 10.53 12 1.0000
+Table 5: Joint robust Wald tests with chi-square reference distributions.
+Pair 𝐷 𝑎𝑏: oxygen Holm 𝑝 𝐷 𝑎𝑏: nitrate Holm 𝑝
+A1–A2 0.226 0.0554 -1.993 4.06 × 10−39
+A1–A3 0.241 0.0554 -3.978 < 10−99
+A1–A4 0.537 1.42 × 10−9 -5.220 < 10−99
+A1–A5 0.294 0.0059 -6.116 < 10−99
+A2–A3 0.015 1.0000 -1.985 1.21 × 10−38
+A2–A4 0.311 0.0035 -3.227 < 10−99
+A2–A5 0.069 1.0000 -4.124 < 10−99
+A3–A4 0.296 0.0117 -1.242 1.14 × 10−15
+A3–A5 0.053 1.0000 -2.138 2.03 × 10−41
+A4–A5 -0.243 0.0421 -0.897 9.19 × 10−8
+Table 6: Section contrasts: first section minus second, averaged over seasons, in mg/L. All three test tables
+share one 26-test Holm adjustment. Very small adjusted 𝑝-values are shown as < 10−99.
+All ten nitrate pairs reject at 0.075. Seven oxygen pairs reject: A1–A2, A1–A3, A1–A4, A1–A5,
+A2–A4, A3–A4, and A4–A5. A2–A3, A2–A5, and A3–A5 do not reject. These statements concern
+seasonal-average section means.
+Saubach river water quality 9
+
+5 Summary and discussion
+5.1 Answers to the research questions
+The analysis compared oxygen and nitrate concentrations in the Saubach river across five sections
+andfourseasons. All900observationswereretainedinabalanceddesign. Testsusedafullfactorial
+model, HC3 covariance, and Holm adjustment across 26 hypotheses at 𝛼 = 0.075.
+For spring versus autumn, mean nitrate is higher in spring by 0.871 mg/L, averaged equally over the
+five sections (adjusted 𝑝 = 1.22 × 10−8). Mean oxygen is higher in spring by 0.152 mg/L, but its
+adjusted 𝑝 = 0.324 does not provide sufficient evidence of a difference. This non-rejection does not
+demonstrate equal concentrations.
+Both analytes show differences between section means averaged over seasons. Every nitrate pair
+differs, with progressively higher means downstream. For oxygen, A1 differs from all four other
+sections, and A4 also differs from A2, A3, and A5. The oxygen interaction shows that its spatial
+pattern depends on season, so these seven pairwise differences are averages rather than a common
+pattern throughout the year.
+5.2 Diagnostic evidence and limitations
+Within-cell SDs range from 0.648 to 1.090 mg/L for oxygen and 1.181 to 1.746 mg/L for nitrate,
+supporting a covariance estimator that permits different variances. Residual Q–Q plots show ap-
+proximately linear overall patterns, with some tail departures. The residual plots and full diagnos-
+tics are supplied with the analysis code. Replacing HC3 with HC2 leaves all 26 adjusted decisions
+unchanged. Direct cell calculations also reproduce the estimated means and HC3 covariance to
+numerical precision.
+The main limitation is the unknown sampling design. The CSV does not identify sampling dates
+or repeated sites. If measurements are correlated in time or space, the independent-error covari-
+ance may understate or otherwise misrepresent uncertainty; HC3 does not solve that problem. The
+significance conclusions are therefore conditional on independent sampling and the accuracy of
+asymptotic approximation.
+The downstream nitrate gradient and low summer oxygen identify patterns for further investigation.
+The data do not establish their causes or whether concentrations imply environmental harm. Ad-
+ditional sampling metadata and contextual measurements would be needed before considering a
+dependence model, explanatory mechanisms, or applicable environmental thresholds.
+5.3 Project materials
+The original dataset, download provenance, executable scripts, numerical results, figures, and ed-
+itable report sources are available in the project repository:
+https://github.com/mohamadghoroobi/river-oxygene-and-nitrate-analyses
+Saubach river water quality 10

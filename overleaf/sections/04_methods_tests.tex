@@ -1,0 +1,27 @@
+\subsection{Hypotheses and test statistics}
+For each outcome, the seasonal null is $H_0:\Delta=0$ against $H_1:\Delta\ne0$. The omnibus section null is equality of all five seasonal-average section means, represented by four independent contrasts. Each of the ten section-pair nulls is $H_0:D_{ab}=0$. A further 12-contrast test checks absence of interaction:
+\begin{equation}
+(\mu_{ij}-\mu_{i1})-(\mu_{1j}-\mu_{11})=0,
+\qquad i>1,\ j>1.
+\end{equation}
+For a $q$-row contrast matrix $L$, the Wald statistic is
+\begin{equation}
+W=(L\widehat{\boldsymbol\beta})^\top
+ (L\widehat V L^\top)^{-1}
+ (L\widehat{\boldsymbol\beta})\ \dot\sim\ \chi_q^2.
+\end{equation}
+For a scalar contrast $c$, the signed statistic is
+$z=c^\top\widehat{\boldsymbol\beta}/\sqrt{c^\top\widehat Vc}$ and $W=z^2$. Two-sided $p$-values use a standard normal reference for $z$; joint tests use the indicated chi-square reference. These are asymptotic approximations, not exact finite-sample tests. Repeated observations in each cell support approximation of the cell means, conditional on independent sampling and finite variances.
+
+\subsection{Multiplicity and interval coverage}
+The significance level is $\alpha=0.075$. One family contains all 26 tests: two seasonal, two section omnibus, twenty section pairs, and two interactions. For ordered raw $p$-values $p_{(1)},\ldots,p_{(26)}$, Holm-adjusted values are
+\begin{equation}
+p^{\mathrm{adj}}_{(k)}=
+\min\left\{1,\max_{1\le r\le k}(26-r+1)p_{(r)}\right\}.
+\end{equation}
+Reject if $p^{\mathrm{adj}}\le0.075$. To see the familywise protection, suppose $m_0$ nulls are true. At the first true rejection, the threshold is no greater than $\alpha/m_0$. The union bound over the $m_0$ true nulls therefore bounds any false rejection by $\alpha$, provided their individual $p$-values are valid. Here that validity is approximate because Wald references are asymptotic.
+
+Pointwise $92.5\%$ intervals are estimate $\pm z_{0.9625}$ times standard error, with $z_{0.9625}\approx1.7805$. They are not simultaneous intervals. A pointwise interval may exclude zero even when the globally adjusted test does not reject.
+
+\subsection{Descriptive summaries and model checks}
+Descriptive summaries use means, sample SDs, medians, quartiles, and ranges. Boxplots show the median and the interval from $Q_1$ to $Q_3$; whiskers reach the furthest observations within $1.5(Q_3-Q_1)$ of the box. Other observations are displayed and retained. Quartiles use linear interpolation. Residual-versus-fitted and normal Q--Q plots inspect spread and shape. The HC2 sensitivity estimator replaces $(1-h_r)^2$ by $1-h_r$ in HC3; here it scales the covariance by $44/45$.

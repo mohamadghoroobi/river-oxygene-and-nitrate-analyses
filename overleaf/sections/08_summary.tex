@@ -1,0 +1,18 @@
+\section{Summary and discussion}\label{sec:summary}
+\subsection{Answers to the research questions}
+The analysis compared oxygen and nitrate concentrations in the Saubach river across five sections and four seasons. All 900 observations were retained in a balanced design. Tests used a full factorial model, HC3 covariance, and Holm adjustment across 26 hypotheses at $\alpha=0.075$.
+
+For spring versus autumn, mean nitrate is higher in spring by 0.871 mg/L, averaged equally over the five sections (adjusted $p=1.22\times10^{-8}$). Mean oxygen is higher in spring by 0.152 mg/L, but its adjusted $p=0.324$ does not provide sufficient evidence of a difference. This non-rejection does not demonstrate equal concentrations.
+
+Both analytes show differences between section means averaged over seasons. Every nitrate pair differs, with progressively higher means downstream. For oxygen, A1 differs from all four other sections, and A4 also differs from A2, A3, and A5. The oxygen interaction shows that its spatial pattern depends on season, so these seven pairwise differences are averages rather than a common pattern throughout the year.
+
+\subsection{Diagnostic evidence and limitations}
+Within-cell SDs range from 0.648 to 1.090 mg/L for oxygen and 1.181 to 1.746 mg/L for nitrate, supporting a covariance estimator that permits different variances. Residual Q--Q plots show approximately linear overall patterns, with some tail departures. The residual plots and full diagnostics are supplied with the analysis code. Replacing HC3 with HC2 leaves all 26 adjusted decisions unchanged. Direct cell calculations also reproduce the estimated means and HC3 covariance to numerical precision.
+
+The main limitation is the unknown sampling design. The CSV does not identify sampling dates or repeated sites. If measurements are correlated in time or space, the independent-error covariance may understate or otherwise misrepresent uncertainty; HC3 does not solve that problem. The significance conclusions are therefore conditional on independent sampling and the accuracy of asymptotic approximation.
+
+The downstream nitrate gradient and low summer oxygen identify patterns for further investigation. The data do not establish their causes or whether concentrations imply environmental harm. Additional sampling metadata and contextual measurements would be needed before considering a dependence model, explanatory mechanisms, or applicable environmental thresholds.
+
+\subsection{Project materials}
+The original dataset, download provenance, executable scripts, numerical results, figures, and editable report sources are available in the project repository:\par
+\small\url{https://github.com/mohamadghoroobi/river-oxygene-and-nitrate-analyses}

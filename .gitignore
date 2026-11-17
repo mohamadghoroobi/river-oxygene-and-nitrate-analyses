@@ -8,3 +8,11 @@ tmp/
 *.py[cod]
 .pytest_cache/
 report/equations/
+*.aux
+*.log
+*.toc
+*.out
+*.synctex.gz
+*.fls
+*.fdb_latexmk
+overleaf/main.pdf

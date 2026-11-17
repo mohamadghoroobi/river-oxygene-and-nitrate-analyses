@@ -1,0 +1,8 @@
+{
+  "alpha": 0.075,
+  "confidence_level": 0.925,
+  "expected_pages": 10,
+  "main_document": "main.tex",
+  "compiler": "pdfLaTeX",
+  "bibliography": "Omitted at the author request; university literature requirements remain unmet."
+}
