@@ -1,28 +1,24 @@
-# River oxygen and nitrate analyses
+# River water quality: oxygen and nitrate
 
-Statistical analysis of 900 Saubach water-quality observations across five river sections and four seasons, prepared for the TU Dortmund M.Sc. Data Science summer-semester 2027 application task.
+This project studies how oxygen and nitrate concentrations change across seasons and along a river. It compares spring with autumn, then checks which river sections have different average concentrations. Saubach is the river name assumed in the assignment.
 
-## Report
+## Data
 
-[Read the ten-page report](report/river_water_quality_report.pdf).
+The dataset comes from [TU Dortmund University](https://statistik.tu-dortmund.de/storages/statistik/r/Downloads/Studium/Studiengaenge-Infos/Data_Science/waterquality.csv). It contains 900 observations from five river sections, from headwaters to mouth, across spring, summer, autumn, and winter. There are 180 observations per section and 45 per section in each season.
 
-The report covers the data, mathematical methods, descriptive analysis, spring-autumn comparisons, river-section comparisons, diagnostics and limitations. The editable LaTeX source is in `overleaf/main.tex` and `overleaf/sections/`. [Download the Overleaf upload ZIP](report/saubach_overleaf.zip). The table of contents is on its own second page.
+The original file is in `data/raw/waterquality.csv`. Both concentrations are measured in milligrams per liter (mg/L).
 
-## Results
+| Column | Description |
+|---|---|
+| `ID` | Observation number |
+| `river_section` | Section of the river |
+| `saison` | Season |
+| `oxygen_mgL` | Oxygen concentration in mg/L |
+| `nitrate_mgL` | Nitrate concentration in mg/L |
 
-- Spring minus autumn nitrate: **+0.871 mg/L**, Holm-adjusted p = **1.22e-8**.
-- Spring minus autumn oxygen: **+0.152 mg/L**, Holm-adjusted p = **0.324**.
-- All ten section pairs differ for nitrate.
-- Seven section pairs differ for oxygen when averaged over seasons: A1-A2, A1-A3, A1-A4, A1-A5, A2-A4, A3-A4, and A4-A5.
-- Oxygen shows a section-by-season interaction, so its section averages do not describe a constant difference throughout the year.
+## Run the analysis
 
-Tests use a full factorial cell-means model, HC3 covariance, and one Holm correction over all 26 tests across both outcomes at alpha = 0.075. Intervals are pointwise 92.5% intervals. Conclusions assume independent observations; the CSV does not provide enough sampling metadata to verify independence. The findings do not establish causality or environmental safety.
-
-![Section means by season](outputs/figures/section_season_means.png)
-
-## Reproduce the analysis
-
-Python 3.12 is recommended. Windows / PowerShell:
+Install Python 3.12, then open a terminal in the project folder. On Windows, run these commands in PowerShell:
 
 ```powershell
 python -m venv .venv
@@ -30,29 +26,30 @@ python -m venv .venv
 .\.venv\Scripts\python.exe src/download_data.py
 .\.venv\Scripts\python.exe src/analyze.py
 .\.venv\Scripts\python.exe src/inference.py
-.\.venv\Scripts\python.exe src/build_report.py
 .\.venv\Scripts\python.exe src/validate_outputs.py
 ```
 
-On macOS or Linux, use `.venv/bin/python` in place of `.\.venv\Scripts\python.exe`. Local PDF generation requires Tectonic, latexmk, or pdfLaTeX. Alternatively, import `report/saubach_overleaf.zip` into Overleaf and compile `main.tex` with pdfLaTeX. Use `python src/build_report.py --source-only` to refresh the upload ZIP without a local TeX installation. The report uses 12-point Times-style fonts and 1.5 line spacing. The notebook `notebooks/01_exploration.ipynb` offers an interactive entry point; use a Jupyter-compatible editor with a kernel containing the requirements.
+On macOS or Linux, replace `.\.venv\Scripts\python.exe` with `.venv/bin/python`.
 
-## Data and provenance
+The download script keeps the existing dataset if it is already present. The analysis saves summary tables and test results in `outputs/tables/`, and plots in `outputs/figures/`. The validation script checks the results against the original data. You do not need a LaTeX compiler to run these steps.
 
-The original semicolon-separated CSV was downloaded on 17 November 2026 from [TU Dortmund University](https://statistik.tu-dortmund.de/storages/statistik/r/Downloads/Studium/Studiengaenge-Infos/Data_Science/waterquality.csv). The original application brief is retained in the repository. The data and brief are third-party university materials; no redistribution license is asserted for them.
+You can also explore the results in [the notebook](notebooks/01_exploration.ipynb), using a Jupyter-compatible editor with the project environment selected.
 
-Each section-season cell contains 45 measurements. Validation checks row count, columns, IDs, missingness, finite nonnegative concentrations, and the expected group sizes. All observations are retained. The downloader preserves an existing local copy. Source URL, file size, and SHA-256 are recorded in `data/raw/waterquality.metadata.json`; analysis records the input hash and software versions in `outputs/data_audit.json` and `outputs/inference_audit.json`.
+## Report
 
-## Repository structure
+- [Read the 10-page report](report/river_water_quality_report.pdf).
+- [Download the editable Overleaf project](report/saubach_overleaf.zip).
 
-```text
-data/raw/          Original CSV and provenance
-notebooks/         Interactive exploration and results
-outputs/figures/   Seasonal distributions, section profiles, model diagnostics
-outputs/tables/    Descriptive statistics, all tests, intervals, sensitivity results
-overleaf/          Editable LaTeX sections, tables and figures
-report/            Ten-page PDF, text export and Overleaf ZIP
-docs/              Requirements review
-src/               Download, analysis, inference, and report-generation scripts
+To edit the report in Overleaf, choose **New Project > Upload Project**, upload the ZIP, and open `main.tex`. The report text is split into files in `sections/`.
+
+To rebuild the PDF locally, install Tectonic, latexmk, or pdfLaTeX and make it available on your PATH, then run:
+
+```powershell
+.\.venv\Scripts\python.exe src/build_report.py
 ```
 
-The implementation verifies the fitted cell means and HC3 covariance against direct cell-based calculations. Holm adjustment is also checked independently. HC2 covariance leaves all 26 adjusted test decisions unchanged. The report uses Saubach as the assumed name requested in the task. The bibliography and external citations were omitted at the author request. This means the university's book-reference and bibliography requirements are not met by this GitHub-only version; see `docs/requirements_review.md`.
+To refresh only the Overleaf ZIP without a local LaTeX compiler:
+
+```powershell
+.\.venv\Scripts\python.exe src/build_report.py --source-only
+```
