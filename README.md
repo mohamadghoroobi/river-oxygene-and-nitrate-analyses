@@ -1,6 +1,6 @@
 # River water quality: oxygen and nitrate
 
-This project studies how oxygen and nitrate concentrations change across seasons and along a river. It compares spring with autumn, then checks which river sections have different average concentrations. Saubach is the river name assumed in the assignment.
+This project studies how oxygen and nitrate concentrations change across seasons and along a river. It compares spring with autumn, then checks which river sections have different average concentrations. Saubach is the river name.
 
 ## Data
 
@@ -31,7 +31,7 @@ python -m venv .venv
 
 On macOS or Linux, replace `.\.venv\Scripts\python.exe` with `.venv/bin/python`.
 
-The download script keeps the existing dataset if it is already present. The analysis saves summary tables and test results in `outputs/tables/`, and plots in `outputs/figures/`. The validation script checks the results against the original data. You do not need a LaTeX compiler to run these steps.
+The download script keeps the existing dataset if it is already present. The analysis saves summary tables and test results in `outputs/tables/`, and plots in `outputs/figures/`. The validation script checks the results against the original data.
 
 You can also explore the results in [the notebook](notebooks/01_exploration.ipynb), using a Jupyter-compatible editor with the project environment selected.
 
@@ -39,17 +39,3 @@ You can also explore the results in [the notebook](notebooks/01_exploration.ipyn
 
 - [Read the 10-page report](report/river_water_quality_report.pdf).
 - [Download the editable Overleaf project](report/saubach_overleaf.zip).
-
-To edit the report in Overleaf, choose **New Project > Upload Project**, upload the ZIP, and open `main.tex`. The report text is split into files in `sections/`.
-
-To rebuild the PDF locally, install Tectonic, latexmk, or pdfLaTeX and make it available on your PATH, then run:
-
-```powershell
-.\.venv\Scripts\python.exe src/build_report.py
-```
-
-To refresh only the Overleaf ZIP without a local LaTeX compiler:
-
-```powershell
-.\.venv\Scripts\python.exe src/build_report.py --source-only
-```
